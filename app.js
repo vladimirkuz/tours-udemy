@@ -23,9 +23,13 @@ const viewRouter = require('./routes/viewRoutes');
 // Start express app
 const app = express();
 
+//sharp uses proxy
 app.enable('trust proxy');
 
+// tell express what template engine to use
 app.set('view engine', 'pug');
+
+//set which folder views are located in | path.join(__dirname, 'views') => './views'
 app.set('views', path.join(__dirname, 'views'));
 
 // 1) GLOBAL MIDDLEWARES
@@ -40,10 +44,10 @@ app.use(cors());
 app.options('*', cors());
 // app.options('/api/v1/tours/:id', cors());
 
-// Serving static files
+// Serving static files such as html files (cannot be accessed using routes)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Set security HTTP headers
+// Set security HTTP headers - always use with express
 app.use(helmet());
 
 // Development logging
@@ -78,9 +82,11 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // Prevent parameter pollution
+// Clears up query string - eg prevents duplicate strings
 app.use(
   hpp({
     whitelist: [
+      // Allows some duplicate strings in query
       'duration',
       'ratingsQuantity',
       'ratingsAverage',
@@ -91,6 +97,7 @@ app.use(
   })
 );
 
+// Compress response bodies
 app.use(compression());
 
 // Test middleware
