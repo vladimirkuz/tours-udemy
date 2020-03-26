@@ -36,6 +36,11 @@ const createSendToken = (user, statusCode, req, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
+  // Added by Vlad
+  if (req.password !== req.passwordConfirm) {
+    return next(new AppError('Passwords do not match!', 400));
+  }
+
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
